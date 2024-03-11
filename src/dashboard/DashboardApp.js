@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import styled from "@emotion/styled";
 import { ThemeProvider } from '@emotion/react';
 
+import DashboardNav from './DashboardNav';
+import DashboardHeader from './DashboardHeader';
+
 const theme = {
 
 }
@@ -21,7 +24,8 @@ export default class DashboardApp extends Component {
     return (
       <ThemeProvider theme={theme}>
         <Container>
-
+          <DashboardNav></DashboardNav>
+          <DashboardHeader></DashboardHeader>
         </Container>
       </ThemeProvider>
     )

@@ -4,25 +4,11 @@ body {
     padding: 0;
     height: 100%;
     width: 100%;
-    font-family: 'Microsoft JhengHei';
-    font-weight: 600;
+    font-family: 'Calibri';
+    font-size: 62.5%;
 }
 
 #root {
     height: 100%;
     width: 100%;
-}
-
-.container {
-    background-color: #ededed;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.weather-card {
-    min-width: 360px;
-    box-shadow: 0 1px 3px 0 #999999;
-    background-color: #f9f9f9;
 }

@@ -8,7 +8,7 @@ top: 0;
 left: 0;
 z-index: 0;
 height: 100%;
-width: 80px;
+width: 8rem;
 background-color: #A5A5A5;
 display: block;
 text-align: center;
@@ -16,18 +16,18 @@ text-align: center;
 
 const NavButton = styled.div`
 margin: auto;
-margin-top: 15px;
-padding: 10px;
+margin-top: 1.5rem;
+padding: 1rem;
 position: relative;
 background-color: transparent;
 display: flex;
 text-align: center;
 color: #FFFFFF;
-font-size: 18px;
+font-size: 1.8rem;
 writing-mode: vertical-rl;
 transform: rotate(-180deg);
 border: 1px solid #FFFFFF;
-border-radius: 5px;
+border-radius: .5rem;
 cursor: pointer;
 
 &:hover {

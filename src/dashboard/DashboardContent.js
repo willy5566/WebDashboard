@@ -6,11 +6,12 @@ import DashboardChart from './DashboardChart';
 
 const ContentWrapper = styled.div`
 padding: 0;
-margin: 0;
-height: calc(100% - 90px);
-width: calc(100% - 80px);
+margin-top: 9rem;
+height: calc(100% - 9rem);
+width: calc(100% - 8rem);
 background-color: transparent;
 display: flex;
+position: relative;
 `;
 
 const DashboardContent = (props) => {

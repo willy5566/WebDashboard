@@ -3,12 +3,12 @@ import styled from '@emotion/styled'
 import HomeIcon from './../images/home.svg'
 
 const IconContainer = styled.div`
-margin-top: 45px;
+margin-top: 4.5rem;
 flex-basis: 30%;
 
 svg {
-    width: 40px;
-    height: 40px;
+    width: 4rem;
+    height: 4rem;
     fill: #FFFFFF;    
 }
 

@@ -11,7 +11,7 @@ const theme = {
 }
 
 const Container = styled.div`
-    background-color: #D9D9D9;
+    /* background-color: #D9D9D9; */
     height: 100%;
     display: flex;
     align-items: end;

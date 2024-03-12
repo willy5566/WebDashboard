@@ -8,38 +8,41 @@ import {
 const ChartContainer = styled.div`
 position: relative;
 display: grid;
-grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-gap: 0px;
-grid-row-gap: 10px; /* 垂直間隔為 10 像素 */
-height: 90%;
-width: calc(100% - 190px);
+grid-template-columns: repeat(auto-fit, minmax(42rem, 1fr));
+gap: 1.2rem;
+grid-row-gap: 1.2rem;
+height: 100%;
+width: calc(100% - 21rem);
 background-color: transparent;
+padding: 1rem;
 `;
 
 const CardStyle = {
-    position: 'relative',
-    top: '12px',
-    left: '10px',
-    height: '243px',
-    width: 'calc(100% - 20px)',
+    // position: 'relative',
+    // top: '1.2rem',
+    // left: '1rem',
+    height: '29rem',
+    // width: 'calc(100% - 2rem)',
     textAlign: 'left',
-    fontSize: '13px',
+    fontSize: '1.3rem',
     backgroundColor: 'white',
     padding: '0px',
-    borderRadius: '15px'
+    borderRadius: '1.5rem'
 }
 
 const TitleStyle = {
     width: '100%',
-    margin: '10px',
-    fontSize: '25px',
-    fontWeight: '600'
+    padding: '0rem 3rem',
+    fontSize: '2.5rem',
+    height: '5rem',
+    lineHeight: '5rem',
+    fontWeight: '600',
 }
 
 const ContentStyle = {
-    height: 'calc(100% - 50px)',
+    height: 'calc(100% - 5rem)',
     width: '100%',
-    fontSize: '35px',
+    fontSize: '3.5rem',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
@@ -61,24 +64,24 @@ const OnlineChart = (props) => {
 
     const ShowValueView = styled.div`
     background-color: ${props => props.type === 'online' ? '#FFBB28' : '#FF8042'};
-    border-radius: 10px;
-    padding: 10px 30px;
-    margin: 10px;
-    margin-left: 55px;
+    border-radius: 1rem;
+    padding: 1rem 3rem;
+    margin: 1rem;
+    margin-left: 5.5rem;
     `;
 
     const ShowValueName = styled.div`
-    font-size: 15px;
+    font-size: 1.5rem;
     text-align: center;
     `;
 
     const ShowValue = styled.div`
-    font-size: 25px;
+    font-size: 2.5rem;
     text-align: center;
     `;
 
     return <Container>
-        <PieChart width={160} height={160}>
+        <PieChart width={200} height={200}>
             <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} fill="#8884d8">
                 {data.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -108,7 +111,7 @@ const WarningChart = (props) => {
 
     const Container = styled.div`
     display: flex;
-    font-size: 12px;
+    font-size: 1.2rem;
     `;
 
     return <Container>

@@ -2,44 +2,45 @@ import styled from '@emotion/styled'
 import React, { Component } from 'react'
 
 const CalContainer = styled.div`
-padding: 1%;
+padding: 1rem;
 position: relative;
 display: block;
-margin-left: 10px;
-height: 95%;
-width: 160px;
+margin-left: 1rem;
+height: 100%;
+width: 20rem;
 background-color: transparent;
 `;
 
 const CardStyle = {
     position: 'relative',
-    marginBottom: '12px',
-    height: '100px',
-    width: '90%',
+    marginBottom: '1.2rem',
+    height: '14rem',
+    width: '100%',
     textAlign: 'left',
-    fontSize: '13px',
+    fontSize: '1.3rem',
     backgroundColor: 'white',
     padding: '5%',
-    borderRadius: '15px'
+    borderRadius: '1.5rem'
 }
 
 const TitleStyle = {
     width: '100%',
+    fontSize: '1.5rem'
 }
 
 const ContentStyle = {
-    height: '80px',
+    height: '8rem',
     width: '100%',
     backgroundColor: 'transparent',
-    fontSize: '35px',
+    fontSize: '4rem',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
 }
 
 const UnitStyle = {
-    fontSize: '20px',
-    marginLeft: '5px'
+    fontSize: '2rem',
+    marginLeft: '.5rem'
 }
 
 const CalCard = (props) => {

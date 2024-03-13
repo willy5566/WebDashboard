@@ -42,6 +42,7 @@ const GetTodayUTC = () => {
 }
 
 const DashboardApp = () => {
+  const path = document.location.origin;
 
   const [devicesElement, setDevicesElement] = useState({
     totalVolume: 0,
@@ -52,16 +53,116 @@ const DashboardApp = () => {
     errorCpuHighTempCount: 0,
     errorUnitCount: 0,
     averageLifeTime: 0,
+    life_0_1: 0,
+    life_1_2: 0,
+    life_2_3: 0,
+    life_3_4: 0,
+    life_4_N: 0,
+    life_never: 0,
+    shipToStart_0_1: 0,
+    shipToStart_1_2: 0,
+    shipToStart_2_3: 0,
+    shipToStart_3_4: 0,
+    shipToStart_4_N: 0,
+    shipToStart_never: 0,
+    map: []
   });
 
   useEffect(() => {
-    //fetchAllDevice();
-    fakeAllDevice();
+    fetchAllDevice();
+    //fakeAllDevice();
   }, []);
+
+  const AssignData = (data, map) => {
+    let totalVolume = data.length;
+    let errorEventCount = 0;
+    let errorAbnormalOffCount = 0;
+    let errorCpuHighTempCount = 0;
+    let errorUnitCount = 0;
+    let utcSecNow = GetTodayUTC();
+    let lifeTimeTotal = 0;
+    let online = 0;
+    let life_0_1 = 0;
+    let life_1_2 = 0;
+    let life_2_3 = 0;
+    let life_3_4 = 0;
+    let life_4_N = 0;
+    let life_never = 0;
+    const monthSec = 86400 * 30;
+    const monthSec2 = monthSec * 2;
+    const monthSec3 = monthSec * 3;
+    const monthSec4 = monthSec * 4;
+    for (let device of data) {
+
+      const utcSecCreate = ConvertToUTCsec(device.create_date);
+      const utcSecUpdate = ConvertToUTCsec(device.update_date);
+
+      // online
+      if (utcSecNow - utcSecUpdate < 16400) {
+        online++;
+      }
+      let errorUnit = 0;
+      // error
+      if (device.error_msg !== undefined && device.error_msg !== '') {
+        errorEventCount++;
+        errorUnit++;
+      }
+      if (device.abnormal_poweroff !== undefined && device.abnormal_poweroff > 0) {
+        errorAbnormalOffCount++;
+        errorUnit++;
+      }
+      if (device.cpu_too_high !== undefined && device.cpu_too_high > 0) {
+        errorCpuHighTempCount++;
+        errorUnit++;
+      }
+      if (errorUnit > 0) {
+        errorUnitCount++;
+      }
+
+      let lifeTime = utcSecUpdate - utcSecCreate;
+
+      if (lifeTime > monthSec4) {
+        life_4_N++;
+      } else if (lifeTime > monthSec3) {
+        life_3_4++;
+      } else if (lifeTime > monthSec2) {
+        life_2_3++;
+      } else if (lifeTime > monthSec) {
+        life_1_2++;
+      } else if (lifeTime > 0) {
+        life_0_1++;
+      } else {
+        life_never++;
+      }
+
+      // life time
+      lifeTimeTotal += lifeTime;
+    }
+    let offline = totalVolume - online;
+    let averageLifeTime = (lifeTimeTotal / totalVolume) / 86400 / 30;
+
+    setDevicesElement(() => ({
+      totalVolume: totalVolume,
+      online: online,
+      offline: offline,
+      errorEventCount: errorEventCount,
+      errorAbnormalOffCount: errorAbnormalOffCount,
+      errorCpuHighTempCount: errorCpuHighTempCount,
+      errorUnitCount: errorUnitCount,
+      averageLifeTime: averageLifeTime,
+      life_0_1: life_0_1,
+      life_1_2: life_1_2,
+      life_2_3: life_2_3,
+      life_3_4: life_3_4,
+      life_4_N: life_4_N,
+      life_never: life_never,
+      map: map
+    }));
+  }
 
   const fetchAllDevice = () => {
 
-    const path = 'http://127.0.0.1:4000';
+    //const path = 'http://127.0.0.1:4000';
     const api = '/api/NewClient';
     const url = path + api;
 
@@ -77,57 +178,10 @@ const DashboardApp = () => {
       response.json()
     ).then((res) => {
       const data = res.data;
+      const map = res.map;
       console.log(data);
-      let totalVolume = data.length;
-      let errorEventCount = 0;
-      let errorAbnormalOffCount = 0;
-      let errorCpuHighTempCount = 0;
-      let errorUnitCount = 0;
-      let utcSecNow = GetTodayUTC();
-      let lifeTimeTotal = 0;
-      let online = 0;
-      for (let device of data) {
-
-        const utcSecCreate = ConvertToUTCsec(device.create_date);
-        const utcSecUpdate = ConvertToUTCsec(device.update_date);
-
-        // online
-        if (utcSecNow - utcSecUpdate < 86400) {
-          online++;
-        }
-        let errorUnit = 0;
-        // error
-        if (device.error_msg !== undefined && device.error_msg !== '') {
-          errorEventCount++;
-          errorUnit++;
-        }
-        if (device.abnormal_poweroff !== undefined && device.abnormal_poweroff > 0) {
-          errorAbnormalOffCount++;
-          errorUnit++;
-        }
-        if (device.cpu_too_high !== undefined && device.cpu_too_high > 0) {
-          errorCpuHighTempCount++;
-          errorUnit++;
-        }
-        if (errorUnit > 0) {
-          errorUnitCount++;
-        }
-        // life time
-        lifeTimeTotal += (utcSecUpdate - utcSecCreate);
-      }
-      let offline = totalVolume - online;
-      let averageLifeTime = (lifeTimeTotal / totalVolume) / 86400 / 30;
-
-      setDevicesElement(() => ({
-        totalVolume: totalVolume,
-        online: online,
-        offline: offline,
-        errorEventCount: errorEventCount,
-        errorAbnormalOffCount: errorAbnormalOffCount,
-        errorCpuHighTempCount: errorCpuHighTempCount,
-        errorUnitCount: errorUnitCount,
-        averageLifeTime: averageLifeTime,
-      }));
+      console.log(map);
+      AssignData(data, map);
     });
   }
 
@@ -404,57 +458,11 @@ const DashboardApp = () => {
         usb_peripheral: '0.1.0:VID_0ACD&PID_2030\n1.1.2:VID_0ACD&PID_2030\n0.2.1:VID_0ACD&PID_20A0'
       }
     ];
-    console.log(data);
-    let totalVolume = data.length;
-    let errorEventCount = 0;
-    let errorAbnormalOffCount = 0;
-    let errorCpuHighTempCount = 0;
-    let errorUnitCount = 0;
-    let utcSecNow = GetTodayUTC();
-    let lifeTimeTotal = 0;
-    let online = 0;
-    for (let device of data) {
+    const map = [
 
-      const utcSecCreate = ConvertToUTCsec(device.create_date);
-      const utcSecUpdate = ConvertToUTCsec(device.update_date);
+    ];
+    AssignData(data, map);
 
-      // online
-      if (utcSecNow - utcSecUpdate < 16400) {
-        online++;
-      }
-      let errorUnit = 0;
-      // error
-      if (device.error_msg !== undefined && device.error_msg !== '') {
-        errorEventCount++;
-        errorUnit++;
-      }
-      if (device.abnormal_poweroff !== undefined && device.abnormal_poweroff > 0) {
-        errorAbnormalOffCount++;
-        errorUnit++;
-      }
-      if (device.cpu_too_high !== undefined && device.cpu_too_high > 0) {
-        errorCpuHighTempCount++;
-        errorUnit++;
-      }
-      if (errorUnit > 0) {
-        errorUnitCount++;
-      }
-      // life time
-      lifeTimeTotal += (utcSecUpdate - utcSecCreate);
-    }
-    let offline = totalVolume - online;
-    let averageLifeTime = (lifeTimeTotal / totalVolume) / 86400 / 30;
-
-    setDevicesElement(() => ({
-      totalVolume: totalVolume,
-      online: online,
-      offline: offline,
-      errorEventCount: errorEventCount,
-      errorAbnormalOffCount: errorAbnormalOffCount,
-      errorCpuHighTempCount: errorCpuHighTempCount,
-      errorUnitCount: errorUnitCount,
-      averageLifeTime: averageLifeTime,
-    }));
   }
 
   return (

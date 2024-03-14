@@ -5,6 +5,14 @@ import {
     BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid,
 } from 'recharts';
 import { GoogleMap, MarkerF, useJsApiLoader, useLoadScript } from '@react-google-maps/api';
+//import CustomMarker from '../images/blue.png'
+
+var iconPin = {
+    path: 'M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8z',
+    fillColor: '#FFBB28',
+    fillOpacity: 1,
+    scale: 0.02, //to reduce the size of icons
+};
 
 const ChartContainer = styled.div`
 position: relative;
@@ -237,7 +245,8 @@ const LocationChart = (props) => {
                     zoom={1}
                     mapContainerStyle={{
                         width: '85%',
-                        height: '90%'
+                        height: '90%',
+                        maxWidth: '42rem'
                     }}>
 
                     {
@@ -245,7 +254,10 @@ const LocationChart = (props) => {
                             return (
                                 <MarkerF
                                     key={marker.ip}
-                                    position={marker.latLng} />
+                                    position={marker.latLng}
+                                    options={{
+                                        icon: iconPin,
+                                    }} />
                             )
                         }))
                     }

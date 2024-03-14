@@ -40,6 +40,20 @@ module.exports = {
                 issuer: /\.[jt]sx?$/,
                 use: [{ loader: '@svgr/webpack', options: { icon: true } }],
             },
+            {
+                test: /\.(png|jpg|gif)$/i,
+                use: [
+                    {
+                        loader: 'url-loader',
+                        options: {
+                            // 用以限制須轉為 base64 的文件大小 (單位：byte)
+                            limit: 8192,
+                            // 超過大小及調用 file-loader
+                            fallback: require.resolve('file-loader'),
+                        },
+                    },
+                ],
+            }
         ],
     },
     plugins: [

@@ -4,6 +4,7 @@ import DashboardApp from "./dashboard/DashboardApp";
 import "normalize.css"
 import "./style.css";
 
+
 function App() {
     return (
         <DashboardApp />

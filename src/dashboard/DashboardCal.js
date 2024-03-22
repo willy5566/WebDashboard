@@ -2,63 +2,75 @@ import styled from '@emotion/styled'
 import React, { Component } from 'react'
 
 const CalContainer = styled.div`
-padding: 1rem;
+
 position: relative;
 display: block;
-margin-left: 1rem;
+margin-left: 59px;
 height: 100%;
-width: 20rem;
 background-color: transparent;
 `;
 
-const CardStyle = {
-    position: 'relative',
-    marginBottom: '1.2rem',
-    height: '14rem',
-    width: '100%',
-    textAlign: 'left',
-    fontSize: '1.3rem',
-    backgroundColor: 'white',
-    padding: '5%',
-    borderRadius: '1.5rem'
-}
+const CardStyle = styled.div`
+    margin-bottom: 22px;
+    padding: 27px 32px;
+    //text-align: left;
+    width: 336px;
+    height: 175px;
+    background: #FFFFFF;
+    box-shadow: 0px 4px 10px rgba(182, 182, 182, 0.25);
+    border-radius: 30px;
 
-const TitleStyle = {
-    width: '100%',
-    fontSize: '1.5rem'
+&:last-of-type{
+    margin-bottom: 0;
 }
+`
 
-const ContentStyle = {
-    height: '8rem',
-    width: '100%',
-    backgroundColor: 'transparent',
-    fontSize: '4rem',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-}
+const TitleStyle = styled.div`
+    font-size: 18px;
+`;
 
-const UnitStyle = {
-    fontSize: '2rem',
-    marginLeft: '.5rem'
-}
+const DescriptionStyle = styled.div`
+margin-left: 10px;
+font-size: 14px;
+color: #666666;
+`;
+
+const ContentStyle = styled.div`
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+    font-size: 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 15px;
+`;
+
+const UnitStyle = styled.span`
+    font-size: 24px;
+    margin-left: 5px;
+`;
 
 const CalCard = (props) => {
-    return <div style={CardStyle}>
+    return <CardStyle>
 
-        <div style={TitleStyle}>
+        <TitleStyle>
             {props.title}
-        </div>
-        <div style={ContentStyle}>
+        </TitleStyle>
+        <DescriptionStyle>
+            {props.subTitle}
+        </DescriptionStyle>
+        <ContentStyle>
             <div style={{
-                alignItems: 'baseline'
+                alignItems: 'baseline',
+                fontSize: '48px'
             }}>
-                {props.value}<span style={UnitStyle}>{props.unit}</span>
+                {props.value}<UnitStyle>{props.unit}</UnitStyle>
             </div>
 
-        </div>
+        </ContentStyle>
 
-    </div >
+    </CardStyle >
 }
 
 const DashboardCal = (props) => {
@@ -73,24 +85,37 @@ const DashboardCal = (props) => {
         online,
         totalVolume
     } = props.devicesElement;
+    const { page } = props;
     return (
         <CalContainer>
+
             <CalCard
                 title='Total Shipped Volume'
+                //subTitle='Total shipment quantity'
                 value={totalVolume}
                 unit='pcs' />
-            <CalCard
-                title='Online Percentage'
-                value={(online / totalVolume * 100).toFixed(1)}
-                unit='%' />
-            <CalCard
-                title='Total Units with problems'
-                value={errorUnitCount}
-                unit='pcs' />
-            <CalCard
-                title='The Average Lifetime'
-                value={averageLifeTime.toFixed(2)}
-                unit='mth' />
+
+            {(page === 'Inventory' || page === 'Home') && (
+                <CalCard
+                    title='Online Percentage'
+                    //subTitle='Percentage of devices that have been online since shipment'
+                    value={(online / totalVolume * 100).toFixed(1)}
+                    unit='%' />
+            )}
+            {(page === 'Quality' || page === 'Home') && (
+                <CalCard
+                    title='Total Units with problems'
+                    //subTitle='Number of devices with problems'
+                    value={errorUnitCount}
+                    unit='pcs' />
+            )}
+            {(page === 'Location' || page === 'Home') && (
+                <CalCard
+                    title='The Average Lifetime'
+                    //subTitle='On online machines, the time difference between the first reply and the last reply'
+                    value={averageLifeTime.toFixed(2)}
+                    unit='mth' />
+            )}
         </CalContainer>
     )
 

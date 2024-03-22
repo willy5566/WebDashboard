@@ -7,7 +7,7 @@ import DashboardHeader from './DashboardHeader';
 import DashboardContent from './DashboardContent';
 
 const theme = {
-
+  locationHeight: 'calc(100% - 50px)'
 }
 
 const Container = styled.div`
@@ -16,6 +16,19 @@ const Container = styled.div`
     display: flex;
     align-items: end;
     justify-content: right;
+`;
+
+const Calendar = styled.div`
+border-radius: 10px;
+box-shadow: 0 6px 12px rgba(27, 37, 86, 0.16);
+overflow: hidden;
+`;
+
+const Popper = styled.div`
+position: absolute;
+top: 0;
+left: 0;
+z-index: 2;
 `;
 
 const ConvertToUTCsec = (dateTime) => {
@@ -42,6 +55,12 @@ const GetTodayUTC = () => {
 }
 
 const DashboardApp = () => {
+
+  // 重新載入時清空紀錄
+  window.addEventListener('beforeunload', () => {
+    localStorage.clear();
+  })
+
   const path = document.location.origin;
 
   const [devicesElement, setDevicesElement] = useState({
@@ -65,29 +84,40 @@ const DashboardApp = () => {
     shipToStart_3_4: 0,
     shipToStart_4_N: 0,
     shipToStart_never: 0,
+    active_0_1: 0,
+    active_1_2: 0,
+    active_2_3: 0,
+    active_3_4: 0,
+    active_never: 0,
     map: []
   });
 
   useEffect(() => {
-    fetchAllDevice();
-    //fakeAllDevice();
+    //fetchAllDevice();
+    fakeAllDevice();
   }, []);
 
-  const AssignData = (data, map) => {
-    let totalVolume = data.length;
+  const AssignData = (data, map, workTable) => {
+    let totalVolume = workTable.length;
     let errorEventCount = 0;
     let errorAbnormalOffCount = 0;
     let errorCpuHighTempCount = 0;
     let errorUnitCount = 0;
     let utcSecNow = GetTodayUTC();
     let lifeTimeTotal = 0;
-    let online = 0;
+    let online = data.length;
+    let offline = totalVolume - online;
     let life_0_1 = 0;
     let life_1_2 = 0;
     let life_2_3 = 0;
     let life_3_4 = 0;
     let life_4_N = 0;
-    let life_never = 0;
+    let life_never = offline;
+    let active_0_1 = 0;
+    let active_1_2 = 0;
+    let active_2_3 = 0;
+    let active_3_4 = 0;
+    let active_never = offline;
     const monthSec = 86400 * 30;
     const monthSec2 = monthSec * 2;
     const monthSec3 = monthSec * 3;
@@ -98,9 +128,9 @@ const DashboardApp = () => {
       const utcSecUpdate = ConvertToUTCsec(device.update_date);
 
       // online
-      if (utcSecNow - utcSecUpdate < 16400) {
-        online++;
-      }
+      // if (utcSecNow - utcSecUpdate < 16400) {
+      //   online++;
+      // }
       let errorUnit = 0;
       // error
       if (device.error_msg !== undefined && device.error_msg !== '') {
@@ -132,14 +162,38 @@ const DashboardApp = () => {
       } else if (lifeTime > 0) {
         life_0_1++;
       } else {
-        life_never++;
+        life_0_1++;
       }
 
       // life time
       lifeTimeTotal += lifeTime;
     }
-    let offline = totalVolume - online;
-    let averageLifeTime = (lifeTimeTotal / totalVolume) / 86400 / 30;
+
+    let averageLifeTime = (lifeTimeTotal / online) / monthSec;
+
+    for (let work of workTable) {
+      const sn = work.serial_number;
+      for (let device of data) {
+        if (device.serial_number === sn) {
+          const utcSecShipped = ConvertToUTCsec(work.shippingDate);
+          const utcSecCreate = ConvertToUTCsec(device.create_date);
+
+          let activeTime = utcSecCreate - utcSecShipped;
+          if (activeTime > monthSec3) {
+            active_3_4++;
+          } else if (activeTime > monthSec2) {
+            active_2_3++;
+          } else if (activeTime > monthSec) {
+            active_1_2++;
+          } else if (activeTime > 0) {
+            active_0_1++;
+          } else {
+            active_0_1++;
+          }
+          break;
+        }
+      }
+    }
 
     setDevicesElement(() => ({
       totalVolume: totalVolume,
@@ -156,6 +210,11 @@ const DashboardApp = () => {
       life_3_4: life_3_4,
       life_4_N: life_4_N,
       life_never: life_never,
+      active_0_1: active_0_1,
+      active_1_2: active_1_2,
+      active_2_3: active_2_3,
+      active_3_4: active_3_4,
+      active_never: active_never,
       map: map
     }));
   }
@@ -181,7 +240,32 @@ const DashboardApp = () => {
       const map = res.map;
       console.log(data);
       console.log(map);
-      AssignData(data, map);
+
+      const workTable = data.map((element) => {
+        return {
+          serial_number: element.serial_number,
+          mac: element.mac,
+          customer: 'Panasonic',
+          shippingDate: '2024-1-1'
+        }
+      });
+
+      let workFake = [
+        ...workTable
+      ]
+
+      for (let i = 0; i < 30; i++) {
+        workFake.push({
+          serial_number: 'fake',
+          mac: 'fake',
+          customer: 'Panasonic',
+          shippingDate: '2024-3-1'
+        });
+      }
+
+      console.log(workFake)
+
+      AssignData(data, map, workFake);
     });
   }
 
@@ -554,16 +638,53 @@ const DashboardApp = () => {
         "count": 11
       }
     ];
-    AssignData(data, map);
 
+    const workTable = data.map((element) => {
+      return {
+        serial_number: element.serial_number,
+        mac: element.mac,
+        customer: 'Panasonic',
+        shippingDate: '2024-1-1'
+      }
+    });
+
+    let workFake = [
+      ...workTable
+    ]
+
+    for (let i = 0; i < 30; i++) {
+      workFake.push({
+        serial_number: 'fake',
+        mac: 'fake',
+        customer: 'Panasonic',
+        shippingDate: '2024-3-1'
+      });
+    }
+
+    console.log(workFake)
+
+    AssignData(data, map, workFake);
+
+  }
+
+  let currentPage = localStorage.getItem('page') || 'Home';
+
+  const [page, setPage] = useState(currentPage);
+
+  const handlePage = (param) => {
+    console.log(param);
+    setPage(param);
+    localStorage.setItem('page', param);
   }
 
   return (
     <ThemeProvider theme={theme}>
       <Container>
-        <DashboardNav></DashboardNav>
+        <DashboardNav
+          handlePage={handlePage}
+          page={page}></DashboardNav>
         <DashboardHeader></DashboardHeader>
-        <DashboardContent
+        <DashboardContent page={page}
           devicesElement={devicesElement}></DashboardContent>
       </Container>
     </ThemeProvider>

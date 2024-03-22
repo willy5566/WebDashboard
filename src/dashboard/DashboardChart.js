@@ -5,6 +5,7 @@ import {
     BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid,
 } from 'recharts';
 import { GoogleMap, MarkerF, useJsApiLoader, useLoadScript } from '@react-google-maps/api';
+import SimpleBarChart from './SimpleBarChart';
 //import CustomMarker from '../images/blue.png'
 
 var iconPin = {
@@ -17,44 +18,71 @@ var iconPin = {
 const ChartContainer = styled.div`
 position: relative;
 display: grid;
-grid-template-columns: repeat(auto-fit, minmax(42rem, 1fr));
-gap: 1.2rem;
-grid-row-gap: 1.2rem;
+grid-template-columns: 1fr 1fr;
+gap: 31px;
+grid-row-gap: 22px;
+padding: 0 0 0 31px;
 height: 100%;
-width: calc(100% - 21rem);
 background-color: transparent;
-padding: 1rem;
 `;
 
-const CardStyle = {
-    // position: 'relative',
-    // top: '1.2rem',
-    // left: '1rem',
-    height: '29rem',
-    // width: 'calc(100% - 2rem)',
-    textAlign: 'left',
-    fontSize: '1.3rem',
-    backgroundColor: 'white',
-    padding: '0px',
-    borderRadius: '1.5rem'
-}
+const CardStyle = styled.div`
+    text-align: left;
+    background-color: #FFFFFF;
+    border-radius: 30px;
 
-const TitleStyle = {
-    width: '100%',
-    padding: '0rem 3rem',
-    fontSize: '2.5rem',
-    height: '5rem',
-    lineHeight: '5rem',
-    fontWeight: '600',
-}
+    width: 519px;
+    height: 372px;
+    overflow: clip;
+    filter: drop-shadow(0px 4px 10px rgba(182, 182, 182, 0.25));
 
-const ContentStyle = {
-    height: 'calc(100% - 5rem)',
-    width: '100%',
-    fontSize: '3.5rem',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
+`;
+
+const TitleStyle = styled.div`
+margin: 28px 0 0px 20px;
+font-size: 24px;
+width: 460px;
+`;
+
+const DescriptionStyle = styled.div`
+font-size: 14px;
+margin-left: 38px;
+color: #666666;
+`;
+
+const ContentStyle = styled.div`
+    height: calc(100% - 50px);
+    height: ${props => props.title === 'Location' || 'auto'} ;
+    //width: 100%;
+    margin-top: 20px;
+    font-size: 3.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
+function getCircle(count) {
+
+    let circleSize = 2;
+
+    if (count > 10) {
+        circleSize = circleSize + 1;
+    } else if (count > 100) {
+        circleSize = circleSize + 2;
+    } else if (count > 1000) {
+        circleSize = circleSize + 3;
+    } else {
+        circleSize = circleSize + 4;
+    }
+
+    return {
+        path: google.maps.SymbolPath.CIRCLE,
+        fillColor: "yellow",
+        fillOpacity: 0.2,
+        scale: circleSize,
+        strokeColor: "white",
+        strokeWeight: 0.5,
+    };
 }
 
 const OnlineChart = (props) => {
@@ -62,7 +90,7 @@ const OnlineChart = (props) => {
         { name: 'online', value: props.online },
         { name: 'offline', value: props.offline },
     ]
-    const COLORS = ['#FFBB28', '#FF8042'];
+    const COLORS = ['#0066EF', '#8AB6F1'];
 
     const Container = styled.div`
     display: flex;
@@ -72,26 +100,31 @@ const OnlineChart = (props) => {
     `;
 
     const ShowValueView = styled.div`
-    background-color: ${props => props.type === 'online' ? '#FFBB28' : '#FF8042'};
-    border-radius: 1rem;
-    padding: 1rem 3rem;
-    margin: 1rem;
-    margin-left: 5.5rem;
+    color: white;
+    background-color: ${props => props.type === 'online' ? '#0066EF' : '#8AB6F1'};
+    border-radius: 10px;
+    //padding: 1rem 3rem;
+    height: 96px;
+    width: 149px;
+    margin-top: 21px;
+    margin-left: 30px;
     `;
 
     const ShowValueName = styled.div`
-    font-size: 2rem;
+    padding-top: 9px;
+    font-size: 16px;
     text-align: center;
     `;
 
     const ShowValue = styled.div`
-    font-size: 4rem;
+    padding-top: 18px;
+    font-size: 24px;
     text-align: center;
     `;
 
     return <Container>
         <PieChart width={250} height={250}>
-            <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={120} fill="#8884d8">
+            <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={110} fill="#8884d8">
                 {data.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
@@ -118,67 +151,76 @@ const WarningChart = (props) => {
         { name: 'CPU temp over 90°C', count: props.errorCpuHighTempCount },
     ];
 
+    const colors = ['#8AB6F1', '#0066EF', '#498FED'];
+
     const Container = styled.div`
     display: flex;
-    font-size: 1.5rem;
+    font-size: 13px;
     `;
 
     return <Container>
         <BarChart
-            width={650}
-            height={250}
-            data={data}
-            margin={{
-                top: 5,
-                right: 50,
-                left: 0,
-                bottom: 5
-            }}
-        >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="count" fill="#8884d8" barSize={50}
-                activeBar={<Rectangle fill="pink" stroke="blue" />}
-            />
-        </BarChart>
-    </Container>;
-}
 
-const LifeChart = (props) => {
-    const data = [
-        { name: '1 month', count: props.life_0_1 },
-        { name: '2 month', count: props.life_1_2 },
-        { name: '3 month', count: props.life_2_3 },
-        { name: '4 month', count: props.life_3_4 },
-        { name: 'more than 4', count: props.life_4_N },
-        { name: 'Never', count: props.life_never },
-    ];
-
-    const Container = styled.div`
-    display: flex;
-    font-size: 1.5rem;
-    `;
-
-    return <Container>
-        <BarChart
-            width={550}
+            width={450}
             height={250}
             data={data}
             margin={{
                 top: 25,
                 right: 0,
                 left: 0,
-                bottom: 5
+                bottom: 0
+            }}
+        >
+            {/* <CartesianGrid strokeDasharray="3 3" /> */}
+            <XAxis dataKey="name" />
+            {/* <YAxis /> */}
+            {/* <Tooltip /> */}
+            {/* <Legend /> */}
+            <Bar dataKey="count" fill="#8884d8" barSize={50}
+                // activeBar={<Rectangle fill="pink" stroke="blue" />}                
+                label={{ position: "top" }}>
+                {data.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                ))}
+            </Bar>
+
+        </BarChart>
+    </Container>;
+}
+
+const LifeChart = (props) => {
+    const data = [
+        { name: '1 mth', count: props.life_0_1 },
+        { name: '2 mth', count: props.life_1_2 },
+        { name: '3 mth', count: props.life_2_3 },
+        { name: '4 mth', count: props.life_3_4 },
+        { name: '> 4 mth', count: props.life_4_N },
+        { name: 'Never', count: props.life_never },
+    ];
+
+    const Container = styled.div`
+    display: flex;
+    font-size: 16px;
+    `;
+
+    return <Container>
+        <BarChart
+
+            width={450}
+            height={250}
+            data={data}
+            margin={{
+                top: 15,
+                right: 0,
+                left: 0,
+                bottom: 0
             }}
         >
             {/* <CartesianGrid strokeDasharray="3 3" /> */}
             <XAxis dataKey="name" />
             {/* <YAxis /> */}
             {/* <Legend /> */}
-            <Tooltip />
+            {/* <Tooltip /> */}
             <Bar dataKey="count" fill="#5B9BD5" barSize={50}
                 label={{ position: "top" }}
             />
@@ -193,60 +235,21 @@ const LocationChart = (props) => {
         googleMapsApiKey: ''
     });
 
-    // const markers = [
-    //     {
-    //         key: 1,
-    //         pos: {
-    //             lat: 61.5226949459836,
-    //             lng: 89.47265625
-    //         }
-    //     },
-    //     {
-    //         key: 2,
-    //         pos: {
-    //             lat: 57.79794388498275,
-    //             lng: 65.21484375
-    //         }
-    //     },
-    //     {
-    //         key: 3,
-    //         pos: {
-    //             lat: 38.685509760012,
-    //             lng: 57.48046875
-    //         }
-    //     },
-    //     {
-    //         key: 4,
-    //         pos: {
-    //             lat: 16.804541076383455,
-    //             lng: 109.16015625
-    //         }
-    //     }
-    // ];
-
-    // const [activeMarker, setActiveMarker] = useState(null);
-
-    // const handleActiveMarker = (marker) => {
-    //     if (marker === activeMarker) {
-    //         return;
-    //     }
-    //     setActiveMarker(marker);
-    // }
-
     return (
         <div style={{
             width: '100%', height: '100%',
             display: 'flex',
-            justifyContent: 'center'
+            justifyContent: 'center',
         }}>
+
             {isLoaded ? (
                 <GoogleMap
-                    center={{ lat: 35, lng: 0 }}
+                    center={{ lat: 30, lng: 10 }}
                     zoom={1}
                     mapContainerStyle={{
-                        width: '85%',
-                        height: '90%',
-                        maxWidth: '42rem'
+                        width: '100%',
+                        height: '100%',
+                        //maxWidth: '42rem'
                     }}>
 
                     {
@@ -256,7 +259,7 @@ const LocationChart = (props) => {
                                     key={marker.ip}
                                     position={marker.latLng}
                                     options={{
-                                        icon: iconPin,
+                                        icon: getCircle(marker.count),
                                     }} />
                             )
                         }))
@@ -265,19 +268,123 @@ const LocationChart = (props) => {
 
                 </GoogleMap>
             ) : null}
-        </div>
+        </div >
     );
 }
 
+const ActiveChart = (props) => {
+    const data = [
+        { name: '1 mth', count: props.active_0_1 },
+        { name: '2 mth', count: props.active_1_2 },
+        { name: '3 mth', count: props.active_2_3 },
+        { name: '4 mth', count: props.active_3_4 },
+        { name: 'Never', count: props.active_never },
+    ];
+
+    const Container = styled.div`
+    display: flex;
+    font-size: 16px;
+    `;
+
+    return <Container>
+        <SimpleBarChart
+            data={data}
+            xKey='name'
+            yKey='count'>
+
+        </SimpleBarChart>
+        {/* <BarChart
+            layout='vertical'
+            width={450}
+            height={250}
+            data={data}
+            margin={{
+                top: 5,
+                right: 0,
+                left: 0,
+                bottom: 0
+            }}>
+            <XAxis dataKey="name" />
+            <Bar dataKey="count" fill="#5B9BD5" barSize={50}
+                label={{ position: "top" }}
+            />
+        </BarChart> */}
+    </Container>;
+}
+
+const IssueChart = (props) => {
+    const data = [
+        {
+            name: '1 mth',
+            'System Event': 4000,
+            'Abnormal Off': 2400,
+            'Cpu High Temp': 2400,
+        },
+        {
+            name: '2 mth',
+            'System Event': 3000,
+            'Abnormal Off': 1398,
+            'Cpu High Temp': 2210,
+        },
+        {
+            name: '3 mth',
+            'System Event': 2000,
+            'Abnormal Off': 9800,
+            'Cpu High Temp': 2290,
+        },
+        {
+            name: '4 mth',
+            'System Event': 2780,
+            'Abnormal Off': 3908,
+            'Cpu High Temp': 2000,
+        },
+    ];
+
+    const Container = styled.div`
+    display: flex;
+    font-size: 13px;
+    `;
+
+    return (
+        <Container>
+            <BarChart
+                width={500}
+                height={250}
+                data={data}
+
+                margin={{
+                    top: 5,
+                    right: 0,
+                    left: 0,
+                    bottom: 10,
+                }}
+            >
+                {/* <CartesianGrid strokeDasharray="3 3" /> */}
+                <XAxis dataKey="name" />
+                <YAxis axisLine={false}
+                    tickLine={false} />
+                {/* <Tooltip /> */}
+                <Legend />
+                <Bar dataKey="System Event" barSize={50} stackId="a" fill="#8AB6F1" />
+                <Bar dataKey="Abnormal Off" barSize={50} stackId="a" fill="#0066EF" />
+                <Bar dataKey="Cpu High Temp" barSize={50} stackId="a" fill="#498FED" />
+            </BarChart>
+        </Container>
+    )
+}
+
 const ChartCard = (props) => {
-    return <div style={CardStyle}>
-        <div style={TitleStyle}>
+    return <CardStyle>
+        <TitleStyle>
             {props.title}
-        </div>
-        <div style={ContentStyle}>
+        </TitleStyle>
+        <DescriptionStyle>
+            {props.subTitle}
+        </DescriptionStyle>
+        <ContentStyle title={props.title}>
             {props.chart}
-        </div>
-    </div>
+        </ContentStyle>
+    </CardStyle>
 }
 
 const DashboardChart = (props) => {
@@ -297,8 +404,15 @@ const DashboardChart = (props) => {
         life_3_4,
         life_4_N,
         life_never,
+        active_0_1,
+        active_1_2,
+        active_2_3,
+        active_3_4,
+        active_never,
         map
     } = props.devicesElement;
+    const { page } = props;
+
     const onlineChart = <OnlineChart
         online={online}
         offline={offline} />;
@@ -320,19 +434,55 @@ const DashboardChart = (props) => {
     const locationChart = <LocationChart
         map={map} />
 
+    const issueChart = <IssueChart />
+
+    const activeChart = <ActiveChart
+        active_0_1={active_0_1}
+        active_1_2={active_1_2}
+        active_2_3={active_2_3}
+        active_3_4={active_3_4}
+        active_never={active_never} />
+
+    const inventorySubTitle = 'online: the devices that have been replied\noffline: the devices that never reply after being shipped';
+
     return (
         <ChartContainer>
-            <ChartCard
-                title='Number of online and offline units'
-                chart={onlineChart} />
-            <ChartCard
-                title='Total number of units with problems'
-                chart={warningChart} />
-            <ChartCard
-                title='The time between the first and last reply'
-                chart={lifeChart} />
-            <ChartCard title='Location'
-                chart={locationChart} />
+            {(page === 'Inventory' || page === 'Home') && (
+                <ChartCard
+                    title='Number of online and offline units'
+                    // subTitle={inventorySubTitle.split('\n').map((line, index) => (
+                    //     <div key={index}>{line}</div>
+                    // ))}
+                    //subTitle={subTitle}
+                    chart={onlineChart} />
+            )}
+            {(page === 'Inventory') && (
+                <ChartCard
+                    title='The time between the shipping date and first reply'
+                    chart={activeChart} />
+            )}
+            {(page === 'Quality' || page === 'Home') && (
+                <ChartCard
+                    title='Total number of units with problems'
+                    //subTitle='Statistics table for each problem'
+                    chart={warningChart} />
+            )}
+            {(page === 'Quality') && (
+                <ChartCard
+                    title='Number of units with problems each month'
+                    chart={issueChart} />
+            )}
+            {(page === 'Location' || page === 'Home') && (
+                <ChartCard
+                    title='The time between the first and last reply'
+                    //subTitle=''
+                    chart={lifeChart} />
+            )}
+            {(page === 'Location' || page === 'Home') && (
+                <ChartCard title='Location'
+                    //subTitle='The location when the device last replied'
+                    chart={locationChart} />
+            )}
         </ChartContainer>
     )
 

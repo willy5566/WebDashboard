@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+#inputID {
+    color: white;
+    font-family: 'Inter';
+}
+
+
+.ant-select-selection-search-input {
+    text-align: center;
+}
+
+.ant-select-selector {
+    text-align: center;
+}
+
+
+.ant-picker-input .ant-picker-suffix {
+    display: none;
+}
+
+.ant-picker-input .ant-picker-clear {
+    padding-right: 10px;
+}
